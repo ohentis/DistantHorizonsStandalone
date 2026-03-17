@@ -23,17 +23,13 @@ public class RenderHelper {
         ClientApi.RENDER_STATE.mcModelViewMatrix = getModelViewMatrix();
         ClientApi.RENDER_STATE.mcProjectionMatrix = getProjectionMatrix();
         ClientApi.RENDER_STATE.clientLevelWrapper = ClientLevelWrapper.getWrapper(Minecraft.getMinecraft().theWorld);
-
-        GL32.glDisable(GL32.GL_ALPHA_TEST);
+        
         GL11.glClearColor(1, 1, 1, 0.0F);
-        int oldActiveTex = GL11.glGetInteger(GL32.GL_ACTIVE_TEXTURE);
-        int oldBoundTex = GL11.glGetInteger(GL32.GL_TEXTURE_BINDING_2D);
+        GL11.glPushAttrib(GL11.GL_TEXTURE_BIT);
         ClientApi.INSTANCE.renderLods();
+        GL11.glPopAttrib();
         GL32.glDepthFunc(GL32.GL_LEQUAL);
-        GL32.glEnable(GL32.GL_ALPHA_TEST);
         GL32.glDisable(GL32.GL_BLEND);
-        GL32.glActiveTexture(oldActiveTex);
-        GL32.glBindTexture(GL32.GL_TEXTURE_2D, oldBoundTex);
     }
 
     public static void beforeWater()

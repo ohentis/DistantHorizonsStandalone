@@ -34,3 +34,11 @@ tasks.runClient { enabled = false }
 tasks.runServer { enabled = false }
 tasks.runClient17 { enabled = false }
 tasks.runServer17 { enabled = false }
+
+
+tasks.withType<JavaExec>().configureEach {
+    if (name.startsWith("runClient") || name.startsWith("runServer")) {
+        environment("LD_PRELOAD", "/usr/lib/apitrace/wrappers/egltrace.so")
+        doFirst { logger.lifecycle("APITRACE: LD_PRELOAD set to ${environment["LD_PRELOAD"]}, workingDir=$workingDir") }
+    }
+}
