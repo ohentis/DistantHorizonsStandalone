@@ -23,7 +23,7 @@ public class RenderHelper {
         ClientApi.RENDER_STATE.mcModelViewMatrix = getModelViewMatrix();
         ClientApi.RENDER_STATE.mcProjectionMatrix = getProjectionMatrix();
         ClientApi.RENDER_STATE.clientLevelWrapper = ClientLevelWrapper.getWrapper(Minecraft.getMinecraft().theWorld);
-        
+
         GL11.glClearColor(1, 1, 1, 0.0F);
         GL11.glPushAttrib(GL11.GL_TEXTURE_BIT);
         ClientApi.INSTANCE.renderLods();
@@ -48,13 +48,11 @@ public class RenderHelper {
         ClientApi.RENDER_STATE.mcProjectionMatrix = getProjectionMatrix();
         ClientApi.RENDER_STATE.clientLevelWrapper = ClientLevelWrapper.getWrapper(Minecraft.getMinecraft().theWorld);
 
-        GL32.glDisable(GL32.GL_ALPHA_TEST);
         if (translucent) {
             ClientApi.INSTANCE.renderFadeTransparent();
         } else {
             ClientApi.INSTANCE.renderFadeOpaque();
         }
-        GL32.glEnable(GL32.GL_ALPHA_TEST);
     }
 
     private static Matrix4f modelViewMatrix;
