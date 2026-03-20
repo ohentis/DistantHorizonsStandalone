@@ -150,7 +150,7 @@ public class LodQuadBuilder
 			EDhDirection dir, 
 			short x, short y, short z,
 			short width, short height,
-			int color, byte irisBlockMaterialId, byte skyLight, byte blockLight)
+			int color, byte irisBlockMaterialId, byte skyLight, byte blockLight, long texture)
 	{
 		if (dir == EDhDirection.DOWN)
 		{
@@ -168,7 +168,7 @@ public class LodQuadBuilder
 			quadList = this.opaqueQuads[dir.ordinal()]; 
 		}
 		
-		BufferQuad quad = new BufferQuad(x, y, z, width, height, color, irisBlockMaterialId, skyLight, blockLight, dir);
+		BufferQuad quad = new BufferQuad(x, y, z, width, height, color, irisBlockMaterialId, skyLight, blockLight, dir, texture);
 		if (!quadList.isEmpty()
 			&& (
 				quadList.get(quadList.size() - 1).tryMerge(quad, BufferMergeDirectionEnum.EastWest)
@@ -183,24 +183,24 @@ public class LodQuadBuilder
 	}
 	
 	// XZ
-	public void addQuadUp(short minX, short maxY, short minZ, short width, int color, byte irisBlockMaterialId, byte skylight, byte blocklight)
+	public void addQuadUp(short minX, short maxY, short minZ, short width, int color, byte irisBlockMaterialId, byte skylight, byte blocklight, long texture)
 	{
 		boolean isTransparent = (this.doTransparency && ColorUtil.getAlpha(color) < 255);
 		ArrayList<BufferQuad> quadList = isTransparent 
 				? this.transparentQuads[EDhDirection.UP.ordinal()] 
 				: this.opaqueQuads[EDhDirection.UP.ordinal()];
 		
-		BufferQuad quad = new BufferQuad(minX, maxY, minZ, width, width, color, irisBlockMaterialId, skylight, blocklight, EDhDirection.UP);
+		BufferQuad quad = new BufferQuad(minX, maxY, minZ, width, width, color, irisBlockMaterialId, skylight, blocklight, EDhDirection.UP, texture);
 		quadList.add(quad);
 	}
 	
-	public void addQuadDown(short x, short y, short z, short width, int color, byte irisBlockMaterialId, byte skylight, byte blocklight)
+	public void addQuadDown(short x, short y, short z, short width, int color, byte irisBlockMaterialId, byte skylight, byte blocklight, long texture)
 	{
 		ArrayList<BufferQuad> quadArray = (this.doTransparency && ColorUtil.getAlpha(color) < 255)
 				? this.transparentQuads[EDhDirection.DOWN.ordinal()]
 				: this.opaqueQuads[EDhDirection.DOWN.ordinal()];
 		
-		BufferQuad quad = new BufferQuad(x, y, z, width, width, color, irisBlockMaterialId, skylight, blocklight, EDhDirection.DOWN);
+		BufferQuad quad = new BufferQuad(x, y, z, width, width, color, irisBlockMaterialId, skylight, blocklight, EDhDirection.DOWN, texture);
 		quadArray.add(quad);
 	}
 	
@@ -408,11 +408,11 @@ public class LodQuadBuilder
 					quad.hasError ? 0 : normalIndex,
 					quad.hasError ? 0 : quad.irisBlockMaterialId,
 					quad.hasError ? 15 : quad.skyLight,
-					quad.hasError ? 15 : quad.blockLight,
+					quad.hasError ? 15 : quad.blockLight, quad.texture,
 					mx, my, mz);
 		}
 	}
-	private void putVertex(ByteBuffer bb, short x, short y, short z, int color, byte normalIndex, byte irisBlockMaterialId, byte skylight, byte blocklight, int mx, int my, int mz)
+	private void putVertex(ByteBuffer bb, short x, short y, short z, int color, byte normalIndex, byte irisBlockMaterialId, byte skylight, byte blocklight,long texture, int mx, int my, int mz)
 	{
 		bb.putShort(x);
 		bb.putShort(y);

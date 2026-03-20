@@ -20,9 +20,11 @@
 package com.seibel.distanthorizons.core.dataObjects.render.bufferBuilding;
 
 import com.seibel.distanthorizons.core.config.Config;
+import com.seibel.distanthorizons.core.dataObjects.fullData.FullDataPointIdMap;
 import com.seibel.distanthorizons.core.dependencyInjection.SingletonInjector;
 import com.seibel.distanthorizons.core.enums.EDhDirection;
 import com.seibel.distanthorizons.core.level.IDhClientLevel;
+import com.seibel.distanthorizons.core.util.FullDataPointUtil;
 import com.seibel.distanthorizons.core.util.objects.pooling.PhantomArrayListCheckout;
 import com.seibel.distanthorizons.core.util.ColorUtil;
 import com.seibel.distanthorizons.core.util.LodUtil;
@@ -31,6 +33,7 @@ import com.seibel.distanthorizons.core.dataObjects.render.columnViews.ColumnRend
 import com.seibel.distanthorizons.core.wrapperInterfaces.minecraft.IMinecraftRenderWrapper;
 import com.seibel.distanthorizons.coreapi.util.MathUtil;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
+import net.minecraftforge.common.util.ForgeDirection;
 import org.jetbrains.annotations.NotNull;
 
 public class ColumnBox
@@ -50,11 +53,11 @@ public class ColumnBox
 	//=========//
 	
 	public static void addBoxQuadsToBuilder(
-			LodQuadBuilder builder, PhantomArrayListCheckout phantomArrayCheckout, IDhClientLevel clientLevel,
-			short width, short yHeight,
-			short minX, short minY, short minZ,
-			int color, byte irisBlockMaterialId, byte skyLight, byte blockLight,
-			long topData, long bottomData, ColumnRenderView[] adjData, boolean[] isAdjDataSameDetailLevel)
+        LodQuadBuilder builder, PhantomArrayListCheckout phantomArrayCheckout, IDhClientLevel clientLevel,
+        short width, short yHeight,
+        short minX, short minY, short minZ,
+        int color, byte irisBlockMaterialId, byte skyLight, byte blockLight,
+        long topData, long bottomData, long fullData, FullDataPointIdMap mapping, ColumnRenderView[] adjData, boolean[] isAdjDataSameDetailLevel)
 	{
 		//================//
 		// variable setup //
@@ -122,7 +125,7 @@ public class ColumnBox
 					&& !isTopTransparent;
 			if (!skipTop)
 			{
-				builder.addQuadUp(minX, maxY, minZ, width, ColorUtil.applyShade(color, MC_RENDER.getShade(EDhDirection.UP)), irisBlockMaterialId, skyLightTop, blockLight);
+				builder.addQuadUp(minX, maxY, minZ, width, ColorUtil.applyShade(color, MC_RENDER.getShade(EDhDirection.UP)), irisBlockMaterialId, skyLightTop, blockLight, FullDataPointUtil.getTexture(fullData, ForgeDirection.UP.flag, mapping));
 			}
 		}
 		
@@ -133,7 +136,7 @@ public class ColumnBox
 					&& !isBottomTransparent;
 			if (!skipBottom)
 			{
-				builder.addQuadDown(minX, minY, minZ, width, ColorUtil.applyShade(color, MC_RENDER.getShade(EDhDirection.DOWN)), irisBlockMaterialId, skyLightBot, blockLight);
+				builder.addQuadDown(minX, minY, minZ, width, ColorUtil.applyShade(color, MC_RENDER.getShade(EDhDirection.DOWN)), irisBlockMaterialId, skyLightBot, blockLight, FullDataPointUtil.getTexture(fullData, ForgeDirection.DOWN.flag, mapping));
 			}
 		}
 		
@@ -157,7 +160,7 @@ public class ColumnBox
 							EDhDirection.NORTH, 
 							minX, minY, minZ, 
 							width, yHeight, 
-							color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight);
+							color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight,  FullDataPointUtil.getTexture(fullData, ForgeDirection.NORTH.flag, mapping));
 				}
 			}
 			else
@@ -166,7 +169,7 @@ public class ColumnBox
 						builder, phantomArrayCheckout, 
 						adjCol, adjSameDetailLevel, caveCullingMaxY, EDhDirection.NORTH, 
 						minX, minY, minZ, width, yHeight,
-						color, irisBlockMaterialId, blockLight);
+						color, irisBlockMaterialId, blockLight, FullDataPointUtil.getTexture(fullData, ForgeDirection.NORTH.flag, mapping));
 			}
 		}
 		
@@ -182,7 +185,7 @@ public class ColumnBox
 							EDhDirection.SOUTH, 
 							minX, minY, maxZ, 
 							width, yHeight, 
-							color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight);
+							color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight, FullDataPointUtil.getTexture(fullData, ForgeDirection.SOUTH.flag, mapping));
 				}
 			}
 			else
@@ -191,7 +194,7 @@ public class ColumnBox
 						builder, phantomArrayCheckout,
 						adjCol, adjSameDetailLevel, caveCullingMaxY, EDhDirection.SOUTH,
 						minX, minY, maxZ, width, yHeight,
-						color, irisBlockMaterialId, blockLight);
+						color, irisBlockMaterialId, blockLight,  FullDataPointUtil.getTexture(fullData, ForgeDirection.SOUTH.flag, mapping));
 			}
 		}
 		
@@ -207,7 +210,7 @@ public class ColumnBox
 							EDhDirection.WEST, 
 							minX, minY, minZ, 
 							width, yHeight, 
-							color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight);
+							color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight,  FullDataPointUtil.getTexture(fullData, ForgeDirection.WEST.flag, mapping));
 				}
 			}
 			else
@@ -216,7 +219,7 @@ public class ColumnBox
 						builder, phantomArrayCheckout,
 						adjCol, adjSameDetailLevel, caveCullingMaxY, EDhDirection.WEST, 
 						minX, minY, minZ, width, yHeight,
-						color, irisBlockMaterialId, blockLight);
+						color, irisBlockMaterialId, blockLight, FullDataPointUtil.getTexture(fullData, ForgeDirection.WEST.flag, mapping));
 			}
 		}
 		
@@ -232,7 +235,7 @@ public class ColumnBox
 							EDhDirection.EAST, 
 							maxX, minY, minZ, 
 							width, yHeight, 
-							color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight);
+							color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight, FullDataPointUtil.getTexture(fullData, ForgeDirection.EAST.flag, mapping));
 				}
 			}
 			else
@@ -241,7 +244,7 @@ public class ColumnBox
 						builder, phantomArrayCheckout,
 						adjCol, adjSameDetailLevel, caveCullingMaxY, EDhDirection.EAST, 
 						maxX, minY, minZ, width, yHeight,
-						color, irisBlockMaterialId, blockLight);
+						color, irisBlockMaterialId, blockLight, FullDataPointUtil.getTexture(fullData, ForgeDirection.EAST.flag, mapping));
 			}
 		}
 	}
@@ -250,7 +253,7 @@ public class ColumnBox
 		LodQuadBuilder builder, PhantomArrayListCheckout phantomArrayCheckout,
 		@NotNull ColumnRenderView adjColumnView, boolean adjacentIsSameDetailLevel, int caveCullingMaxY, EDhDirection direction,
 		short x, short yMin, short z, short horizontalWidth, short ySize,
-		int color, byte irisBlockMaterialId, byte blockLight)
+		int color, byte irisBlockMaterialId, byte blockLight, long texture)
 	{
 		// pooled arrays
 		LongArrayList segments = phantomArrayCheckout.getLongArray(0, 0);
@@ -268,7 +271,7 @@ public class ColumnBox
 		if (adjColumnView.size == 0
 			|| RenderDataPointUtil.hasZeroHeight(adjColumnView.get(0)))
 		{
-			builder.addQuadAdj(direction, x, yMin, z, horizontalWidth, ySize, color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight);
+			builder.addQuadAdj(direction, x, yMin, z, horizontalWidth, ySize, color, irisBlockMaterialId, LodUtil.MAX_MC_LIGHT, blockLight, texture);
 			return;
 		}
 		
@@ -365,7 +368,7 @@ public class ColumnBox
 				builder, direction,
 				x, z, horizontalWidth,
 				color, irisBlockMaterialId, blockLight,
-				YSegmentUtil.getSkyLight(segment), inputTransparent, YSegmentUtil.getEndY(segment), YSegmentUtil.getStartY(segment)
+				YSegmentUtil.getSkyLight(segment), inputTransparent, YSegmentUtil.getEndY(segment), YSegmentUtil.getStartY(segment), texture
 			);
 		}
 	}
@@ -428,7 +431,7 @@ public class ColumnBox
 			LodQuadBuilder builder, EDhDirection direction,
 			short x, short z, short horizontalWidth,
 			int color, byte irisBlockMaterialId, byte blockLight,
-			byte lastSkyLight, boolean inputTransparent, int quadTopY, int quadBottomY
+			byte lastSkyLight, boolean inputTransparent, int quadTopY, int quadBottomY, long texture
 			)
 	{
 		// invalid positions will have a negative skylight
@@ -457,7 +460,7 @@ public class ColumnBox
 				direction, 
 				x, (short) quadBottomY, z, 
 				horizontalWidth, height, 
-				color, irisBlockMaterialId, lastSkyLight, blockLight);
+				color, irisBlockMaterialId, lastSkyLight, blockLight, texture);
 	}
 	
 	

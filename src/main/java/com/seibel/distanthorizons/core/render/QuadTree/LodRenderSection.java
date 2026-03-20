@@ -238,7 +238,7 @@ public class LodRenderSection implements IDebugRenderable, AutoCloseable
 
 				// the render sources are only needed by this synchronous method,
 				// then they can be closed
-				ColumnRenderBufferBuilder.makeLodRenderData(lodQuadBuilder, thisRenderSource, this.level, adjacentRenderSections, adjIsSameDetailLevel);
+				ColumnRenderBufferBuilder.makeLodRenderData(lodQuadBuilder, thisRenderSource, this.fullDataSourceProvider.get(this.pos), this.level, adjacentRenderSections, adjIsSameDetailLevel);
 				return lodQuadBuilder;
 			}
 			catch (Exception e)

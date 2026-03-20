@@ -21,6 +21,8 @@ package com.seibel.distanthorizons.core.dataObjects.render.bufferBuilding;
 
 import com.seibel.distanthorizons.api.enums.rendering.EDhApiBlockMaterial;
 import com.seibel.distanthorizons.api.enums.rendering.EDhApiDebugRendering;
+import com.seibel.distanthorizons.core.dataObjects.fullData.FullDataPointIdMap;
+import com.seibel.distanthorizons.core.dataObjects.fullData.sources.FullDataSourceV2;
 import com.seibel.distanthorizons.core.enums.EDhDirection;
 import com.seibel.distanthorizons.core.config.Config;
 import com.seibel.distanthorizons.core.dataObjects.render.ColumnRenderSource;
@@ -35,6 +37,7 @@ import com.seibel.distanthorizons.core.util.ColorUtil;
 import com.seibel.distanthorizons.core.util.LodUtil;
 import com.seibel.distanthorizons.core.util.RenderDataPointUtil;
 import com.seibel.distanthorizons.core.dataObjects.render.columnViews.ColumnRenderView;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -76,8 +79,8 @@ public class ColumnRenderBufferBuilder
 		return uploadFuture;
 	}
 	public static void makeLodRenderData(
-			LodQuadBuilder quadBuilder, ColumnRenderSource renderSource, IDhClientLevel clientLevel,
-			ColumnRenderSource[] adjRegions, boolean[] isSameDetailLevel)
+        LodQuadBuilder quadBuilder, ColumnRenderSource renderSource, FullDataSourceV2 fullSource, IDhClientLevel clientLevel,
+        ColumnRenderSource[] adjRegions, boolean[] isSameDetailLevel)
 	{
 		//=============//
 		// debug check //
@@ -126,7 +129,9 @@ public class ColumnRenderBufferBuilder
 			{
 				for (int relZ = 0; relZ < ColumnRenderSource.WIDTH; relZ++)
 				{
+                    
 					renderSource.populateColumnView(columnRenderData, relX, relZ);
+                    LongArrayList columnFullData = fullSource.getColumnAtRelPos(relX, relZ);
 					
 					// ignore empty columns
 					if (columnRenderData.size == 0
@@ -274,6 +279,8 @@ public class ColumnRenderBufferBuilder
 						}
 						
 						long data = columnRenderData.get(i);
+                        long fullData = columnFullData.getLong(i);
+                        FullDataPointIdMap mapping = fullSource.mapping;
 						// If the data is not render-able (Void or non-existing) we stop since there is
 						// no data left in this position
 						if (RenderDataPointUtil.hasZeroHeight(data)
@@ -287,7 +294,7 @@ public class ColumnRenderBufferBuilder
 						
 						addRenderDataPointToBuilder(
 							clientLevel, phantomArrayCheckout,
-							data, topDataPoint, bottomDataPoint,
+							data, topDataPoint, bottomDataPoint, fullData, mapping,
 							adjColumnViews, isSameDetailLevel,
 							thisDetailLevel, relX, relZ,
 							quadBuilder);
@@ -300,7 +307,7 @@ public class ColumnRenderBufferBuilder
 	}
 	private static void addRenderDataPointToBuilder(
 			IDhClientLevel clientLevel, PhantomArrayListCheckout phantomArrayCheckout,
-			long renderData, long topRenderData, long bottomRenderData, 
+			long renderData, long topRenderData, long bottomRenderData, long fullData, FullDataPointIdMap mapping,
 			ColumnRenderView[] adjColumnViews, boolean[] isSameDetailLevel,
 			byte detailLevel, int renderSourceOffsetPosX, int renderSourceOffsetPosZ, 
 			LodQuadBuilder quadBuilder)
@@ -432,7 +439,7 @@ public class ColumnRenderBufferBuilder
 				blockMaterialId,
 				RenderDataPointUtil.getLightSky(renderData),
 				fullBright ? LodUtil.MAX_MC_LIGHT : RenderDataPointUtil.getLightBlock(renderData),
-				topRenderData, bottomRenderData, adjColumnViews, isSameDetailLevel);
+				topRenderData, bottomRenderData, fullData, mapping, adjColumnViews, isSameDetailLevel);
 	}
 	
 }

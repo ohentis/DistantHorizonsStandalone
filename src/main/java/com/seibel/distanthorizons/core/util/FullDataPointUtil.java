@@ -1,9 +1,16 @@
 package com.seibel.distanthorizons.core.util;
 
+import com.seibel.distanthorizons.common.wrappers.block.BlockStateWrapper;
+import com.seibel.distanthorizons.common.wrappers.block.FakeBlockState;
+import com.seibel.distanthorizons.core.dataObjects.fullData.FullDataPointIdMap;
 import com.seibel.distanthorizons.core.dataObjects.fullData.sources.FullDataSourceV1;
 import com.seibel.distanthorizons.core.dataObjects.fullData.sources.FullDataSourceV2;
 import com.seibel.distanthorizons.core.util.objects.DataCorruptedException;
+import com.seibel.distanthorizons.core.wrapperInterfaces.block.IBlockStateWrapper;
 import com.seibel.distanthorizons.coreapi.ModInfo;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.common.util.ForgeDirection;
+import org.embeddedt.embeddium.impl.render.chunk.vertex.format.impl.CompactChunkVertex;
 import org.jetbrains.annotations.Contract;
 
 /**
@@ -215,9 +222,21 @@ public class FullDataPointUtil
 			throw new RuntimeException(e);
 		}
 	}
-	
-	//endregion
-	
-	
-	
+    private static short encodeTexture(float value) {
+        return (short)(Math.round(value * 32768.0F) & '\uffff');
+    }
+    //endregion
+    private static long fromIcon(IIcon icon) {
+        return ( encodeTexture(icon.getMinU()) << 48) | (encodeTexture(icon.getMinV()) << 32) | (encodeTexture(icon.getMaxU()) << 16) | encodeTexture(icon.getMaxV());
+    }
+    
+    public static long getTexture(long data, int direction, FullDataPointIdMap mapping) {
+        int blockstate = getId(data);
+        BlockStateWrapper wrapper = (BlockStateWrapper)mapping.getBlockStateWrapper(blockstate);
+        if(wrapper.blockState != null) {
+            return fromIcon(wrapper.blockState.block.getIcon(direction, wrapper.blockState.meta));
+        } else {
+            return 0;
+        }
+    }
 }

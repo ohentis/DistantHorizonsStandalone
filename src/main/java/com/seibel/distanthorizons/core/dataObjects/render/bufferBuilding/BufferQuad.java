@@ -58,13 +58,15 @@ public final class BufferQuad
 	public final EDhDirection direction;
 	
 	public boolean hasError = false;
+    
+    public final long texture;
 	
 	
 	
 	BufferQuad(
 			short x, short y, short z, short widthEastWest, short widthNorthSouthOrHeight,
 			int color, byte irisBlockMaterialId, byte skylight, byte blockLight,
-			EDhDirection direction)
+			EDhDirection direction, long texture)
 	{
 		if (widthEastWest == 0 || widthNorthSouthOrHeight == 0)
 		{
@@ -85,6 +87,7 @@ public final class BufferQuad
 		this.skyLight = skylight;
 		this.blockLight = blockLight;
 		this.direction = direction;
+        this.texture = texture;
 	}
 	
 	
@@ -313,7 +316,7 @@ public final class BufferQuad
 		if (this.color != quad.color ||
 				this.irisBlockMaterialId != quad.irisBlockMaterialId ||
 				this.skyLight != quad.skyLight ||
-				this.blockLight != quad.blockLight)
+				this.blockLight != quad.blockLight || this.texture != quad.texture)
 		{
 			// we can only merge identically colored/lit quads
 			return false;

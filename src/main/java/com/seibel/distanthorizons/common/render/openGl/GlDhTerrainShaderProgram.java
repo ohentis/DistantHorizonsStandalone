@@ -144,7 +144,7 @@ public class GlDhTerrainShaderProgram extends GlShaderProgram implements IDhApiS
 		// byte: iris material ID, normal index, 2 spacers
 		this.vao.setVertexAttribute(0, 2, GlVertexPointer.addUnsignedBytesPointer(4, true, true));
 
-		try
+        try
 		{
 			int vertexByteCount = GlLodVertexFormat.DH_VERTEX_FORMAT.getByteSize();
 			this.vao.completeAndCheck(vertexByteCount);
